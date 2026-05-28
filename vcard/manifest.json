@@ -1,0 +1,22 @@
+{
+  "name": "素食小卡 Veg Card",
+  "short_name": "素食小卡",
+  "description": "素食者用餐溝通小卡 / Vegetarian dining card",
+  "start_url": "/vcard/",
+  "display": "standalone",
+  "background_color": "#f0f7e6",
+  "theme_color": "#4a9f3f",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/vcard/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/vcard/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

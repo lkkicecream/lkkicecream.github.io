@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="素食小卡">
+  <meta name="theme-color" content="#4a9f3f">
+  <title>素食小卡 Veg Card</title>
+  <link rel="manifest" href="/vcard/manifest.json">
+  <link rel="apple-touch-icon" href="/vcard/icons/icon-192.png">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, 'Noto Sans TC', 'Noto Sans JP', sans-serif;
+      background: #f0f7e6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 16px 40px;
+    }
+
+    header {
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #2d6a27;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: #5a8a55;
+    }
+
+    /* Language switcher */
+    .lang-switcher {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .lang-btn {
+      padding: 8px 20px;
+      border: 2px solid #4a9f3f;
+      border-radius: 999px;
+      background: white;
+      color: #4a9f3f;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s;
+    }
+
+    .lang-btn.active {
+      background: #4a9f3f;
+      color: white;
+    }
+
+    /* Card */
+    .card {
+      width: 100%;
+      max-width: 600px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(74, 159, 63, 0.15);
+      padding: 28px 24px;
+      border-top: 5px solid #4a9f3f;
+      position: relative;
+    }
+
+    .lang-panel {
+      display: none;
+      line-height: 1.85;
+      font-size: 1rem;
+      color: #2c3e2c;
+    }
+
+    .lang-panel.visible {
+      display: block;
+    }
+
+    .lang-panel p {
+      margin-bottom: 14px;
+    }
+
+    .lang-panel p:last-child {
+      margin-bottom: 0;
+    }
+
+    .note {
+      font-size: 0.88rem;
+      color: #5a7a55;
+      background: #f0f7e6;
+      border-left: 3px solid #4a9f3f;
+      padding: 8px 12px;
+      border-radius: 4px;
+      margin-bottom: 14px;
+    }
+
+    /* Copy button */
+    .copy-btn {
+      display: block;
+      width: 100%;
+      margin-top: 22px;
+      padding: 12px;
+      background: #f0f7e6;
+      border: 1.5px solid #4a9f3f;
+      border-radius: 10px;
+      color: #2d6a27;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.18s;
+    }
+
+    .copy-btn:hover { background: #d8edcc; }
+    .copy-btn.copied { background: #4a9f3f; color: white; border-color: #4a9f3f; }
+
+    /* PWA install banner */
+    #pwa-banner {
+      display: none;
+      width: 100%;
+      max-width: 600px;
+      margin-top: 20px;
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 2px 12px rgba(74,159,63,0.12);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    #pwa-banner.hidden { display: none !important; }
+
+    .pwa-icon {
+      width: 48px;
+      height: 48px;
+      background: #4a9f3f;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      flex-shrink: 0;
+    }
+
+    .pwa-text {
+      flex: 1;
+    }
+
+    .pwa-text strong {
+      display: block;
+      font-size: 0.95rem;
+      color: #2d6a27;
+      margin-bottom: 2px;
+    }
+
+    .pwa-text span {
+      font-size: 0.8rem;
+      color: #7a9a76;
+    }
+
+    #pwa-install-btn {
+      padding: 9px 18px;
+      background: #4a9f3f;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* iOS hint */
+    #ios-hint {
+      display: none;
+      width: 100%;
+      max-width: 600px;
+      margin-top: 20px;
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 2px 12px rgba(74,159,63,0.12);
+      padding: 16px 20px;
+      text-align: center;
+    }
+
+    #ios-hint.visible { display: block; }
+
+    #ios-hint p {
+      font-size: 0.88rem;
+      color: #4a4a4a;
+      line-height: 1.6;
+    }
+
+    #ios-hint .share-icon { font-size: 1.1rem; }
+
+    footer {
+      margin-top: 28px;
+      font-size: 0.78rem;
+      color: #9ab897;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="title">🥬 素食小卡</div>
+    <div class="subtitle">Vegetarian Dining Card / ベジタリアンカード</div>
+  </header>
+
+  <!-- Language switcher -->
+  <div class="lang-switcher">
+    <button class="lang-btn active" onclick="setLang('zh')">中文</button>
+    <button class="lang-btn" onclick="setLang('en')">English</button>
+    <button class="lang-btn" onclick="setLang('ja')">日本語</button>
+  </div>
+
+  <!-- Card content -->
+  <div class="card">
+
+    <!-- Chinese -->
+    <div class="lang-panel visible" id="panel-zh">
+      <p>不好意思，因為我是素食者，無法食用肉類、海鮮類（包含柴魚高湯、魚露、含魚類成分的醬油等）、酒類（包含料理酒、味醂等），以及五辛（蒜頭、蔥、洋蔥、韭菜、薤等）。</p>
+      <p>想請問店內是否有不含以上食材、可以安心食用的料理呢？</p>
+      <p class="note">※ 使用店內原本的鍋具、烤盤或油炸鍋烹調都沒有關係，只要餐點本身的食材與調味料不含上述成分即可。</p>
+      <p>若可以協助調整餐點內容或調味方式，也非常感謝！<br>麻煩您了，謝謝 😊</p>
+    </div>
+
+    <!-- English -->
+    <div class="lang-panel" id="panel-en">
+      <p>Excuse me, I am a strict vegetarian. I do not eat meat, seafood (including bonito/fish broth, fish sauce, or sauces containing fish-derived ingredients), alcohol (including cooking wine and mirin), or the five pungent vegetables/alliums (such as garlic, onions, green onions, chives, and leeks).</p>
+      <p>May I ask if there are any dishes on the menu that can be prepared without these ingredients?</p>
+      <p class="note">Note: Shared kitchen utensils, grills, pots, or fryers are perfectly fine, as long as the dish itself and its seasonings do not contain the ingredients mentioned above.</p>
+      <p>I would also greatly appreciate it if the ingredients or seasonings could be adjusted accordingly.<br>Thank you very much for your kind assistance!</p>
+    </div>
+
+    <!-- Japanese -->
+    <div class="lang-panel" id="panel-ja">
+      <p>恐れ入りますが、私はベジタリアンのため、肉類・魚介類（鰹だし・魚醤・魚由来の成分を含む調味料など）、アルコール（みりん・料理酒を含む）、そして五葷（にんにく・ねぎ・玉ねぎ・ニラ・らっきょう等）を食べることができません。</p>
+      <p>これらの食材を使用していないお料理はございますでしょうか。</p>
+      <p class="note">※ 調理器具・鉄板・揚げ油などは共有でも問題ありません。料理自体の具材や調味料に上記の食材が含まれていなければ大丈夫です。</p>
+      <p>また、可能であれば、具材や調味料を調整してご対応いただけますと大変ありがたいです。<br>お手数をおかけしますが、よろしくお願いいたします。</p>
+    </div>
+
+    <button class="copy-btn" id="copy-btn" onclick="copyText()">複製文字 / Copy / コピー</button>
+  </div>
+
+  <!-- PWA install banner (Android / Chrome) -->
+  <div id="pwa-banner" class="hidden">
+    <div class="pwa-icon">🥬</div>
+    <div class="pwa-text">
+      <strong>新增到主畫面</strong>
+      <span>離線使用，方便隨時出示</span>
+    </div>
+    <button id="pwa-install-btn" onclick="installPWA()">新增</button>
+  </div>
+
+  <!-- iOS hint -->
+  <div id="ios-hint">
+    <p>📲 在 Safari 點選 <span class="share-icon">⬆️</span>「分享」→「加入主畫面」<br>即可離線使用這張小卡</p>
+  </div>
+
+  <footer>lkkicecream.github.io</footer>
+
+  <script>
+    // Language state
+    let currentLang = 'zh';
+
+    const texts = {
+      zh: `不好意思，因為我是素食者，無法食用肉類、海鮮類（包含柴魚高湯、魚露、含魚類成分的醬油等）、酒類（包含料理酒、味醂等），以及五辛（蒜頭、蔥、洋蔥、韭菜、薤等）。\n\n想請問店內是否有不含以上食材、可以安心食用的料理呢？\n\n（※ 使用店內原本的鍋具、烤盤或油炸鍋烹調都沒有關係，只要餐點本身的食材與調味料不含上述成分即可。）\n\n若可以協助調整餐點內容或調味方式，也非常感謝！麻煩您了，謝謝 😊`,
+      en: `Excuse me, I am a strict vegetarian. I do not eat meat, seafood (including bonito/fish broth, fish sauce, or sauces containing fish-derived ingredients), alcohol (including cooking wine and mirin), or the five pungent vegetables/alliums (such as garlic, onions, green onions, chives, and leeks).\n\nMay I ask if there are any dishes on the menu that can be prepared without these ingredients?\n\n(Note: Shared kitchen utensils, grills, pots, or fryers are perfectly fine, as long as the dish itself and its seasonings do not contain the ingredients mentioned above.)\n\nI would also greatly appreciate it if the ingredients or seasonings could be adjusted accordingly. Thank you very much for your kind assistance!`,
+      ja: `恐れ入りますが、私はベジタリアンのため、肉類・魚介類（鰹だし・魚醤・魚由来の成分を含む調味料など）、アルコール（みりん・料理酒を含む）、そして五葷（にんにく・ねぎ・玉ねぎ・ニラ・らっきょう等）を食べることができません。\n\nこれらの食材を使用していないお料理はございますでしょうか。\n\n（※ 調理器具・鉄板・揚げ油などは共有でも問題ありません。料理自体の具材や調味料に上記の食材が含まれていなければ大丈夫です。）\n\nまた、可能であれば、具材や調味料を調整してご対応いただけますと大変ありがたいです。お手数をおかけしますが、よろしくお願いいたします。`
+    };
+
+    function setLang(lang) {
+      currentLang = lang;
+      document.querySelectorAll('.lang-panel').forEach(p => p.classList.remove('visible'));
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('panel-' + lang).classList.add('visible');
+      event.target.classList.add('active');
+      // Reset copy button
+      const btn = document.getElementById('copy-btn');
+      btn.textContent = '複製文字 / Copy / コピー';
+      btn.classList.remove('copied');
+    }
+
+    function copyText() {
+      const btn = document.getElementById('copy-btn');
+      navigator.clipboard.writeText(texts[currentLang]).then(() => {
+        btn.textContent = '已複製 ✓ Copied ✓ コピー済 ✓';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = '複製文字 / Copy / コピー';
+          btn.classList.remove('copied');
+        }, 2500);
+      });
+    }
+
+    // PWA install
+    let deferredPrompt = null;
+
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('pwa-banner').classList.remove('hidden');
+      document.getElementById('ios-hint').classList.remove('visible');
+    });
+
+    function installPWA() {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(() => {
+        deferredPrompt = null;
+        document.getElementById('pwa-banner').classList.add('hidden');
+      });
+    }
+
+    // iOS Safari detection
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+    if (isIOS && isSafari && !isStandalone) {
+      document.getElementById('ios-hint').classList.add('visible');
+    }
+
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/vcard/sw.js');
+    }
+  </script>
+</body>
+</html>
