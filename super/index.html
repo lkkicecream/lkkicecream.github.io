@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#c8622a">
+  <title>素per古都</title>
+  <link rel="icon" href="/favicon/favicon.ico">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, 'Noto Sans TC', 'Noto Sans JP', sans-serif;
+      background: #fdf8f2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Hero */
+    .hero {
+      width: 100%;
+      background: linear-gradient(160deg, #c8622a 0%, #e8954a 60%, #f0b978 100%);
+      padding: 48px 24px 36px;
+      text-align: center;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    .hero-emoji {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 8px;
+      position: relative;
+    }
+
+    .hero-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      position: relative;
+    }
+
+    .hero-sub {
+      font-size: 0.95rem;
+      opacity: 0.85;
+      margin-top: 6px;
+      position: relative;
+    }
+
+    /* Cards grid */
+    .grid {
+      width: 100%;
+      max-width: 680px;
+      padding: 28px 16px 48px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    @media (max-width: 420px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px 20px 20px;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: transform 0.15s, box-shadow 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:not(.disabled):hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+    }
+
+    .card:not(.disabled):active { transform: scale(0.97); }
+
+    .card.disabled {
+      cursor: default;
+      opacity: 0.6;
+    }
+
+    .card-accent {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+    }
+
+    .card-icon {
+      font-size: 2rem;
+      line-height: 1;
+    }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+
+    .card-desc {
+      font-size: 0.82rem;
+      color: #888;
+      line-height: 1.5;
+    }
+
+    .card-badge {
+      display: inline-block;
+      margin-top: auto;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      align-self: flex-start;
+    }
+
+    /* Per-card colors */
+    .card-ebook .card-accent { background: #c8622a; }
+    .card-ebook .card-badge { background: #fef0e7; color: #c8622a; }
+
+    .card-vcard .card-accent { background: #4a9f3f; }
+    .card-vcard .card-badge { background: #f0f7e6; color: #4a9f3f; }
+
+    .card-shop .card-accent { background: #9b7fc7; }
+    .card-shop .card-badge { background: #f3f0fb; color: #7b5fb0; }
+
+    .card-conbini .card-accent { background: #3a8ac4; }
+    .card-conbini .card-badge { background: #eaf4fc; color: #2a6a9f; }
+
+    footer {
+      margin-top: auto;
+      padding: 20px;
+      font-size: 0.78rem;
+      color: #bbb;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hero">
+    <span class="hero-emoji">⛩️</span>
+    <div class="hero-title">素per古都</div>
+    <div class="hero-sub">旅遊資源一覽</div>
+  </div>
+
+  <div class="grid">
+
+    <a class="card card-ebook" href="/ebook/super/index.html" target="_blank">
+      <div class="card-accent"></div>
+      <div class="card-icon">📖</div>
+      <div class="card-title">旅遊手冊</div>
+      <div class="card-desc">行程規劃・景點資訊・交通攻略</div>
+      <span class="card-badge">電子翻頁書</span>
+    </a>
+
+    <a class="card card-vcard" href="/vcard/">
+      <div class="card-accent"></div>
+      <div class="card-icon">🥬</div>
+      <div class="card-title">素食小卡</div>
+      <div class="card-desc">中英日三語，用餐時出示給店員</div>
+      <span class="card-badge">中・EN・日</span>
+    </a>
+
+    <div class="card card-shop disabled">
+      <div class="card-accent"></div>
+      <div class="card-icon">🛒</div>
+      <div class="card-title">購物清單</div>
+      <div class="card-desc">藥妝・伴手禮・必買清單</div>
+      <span class="card-badge">即將推出</span>
+    </div>
+
+    <div class="card card-conbini disabled">
+      <div class="card-accent"></div>
+      <div class="card-icon">🍱</div>
+      <div class="card-title">超商速食</div>
+      <div class="card-desc">便利商店素食可食清單</div>
+      <span class="card-badge">即將推出</span>
+    </div>
+
+  </div>
+
+  <footer>laugh.tw</footer>
+
+</body>
+</html>
