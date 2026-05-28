@@ -81,8 +81,8 @@
 
     .lang-panel {
       display: none;
-      line-height: 1.85;
-      font-size: 1rem;
+      line-height: 2;
+      font-size: 1.15rem;
       color: #2c3e2c;
     }
 
@@ -99,11 +99,11 @@
     }
 
     .note {
-      font-size: 0.88rem;
+      font-size: 1rem;
       color: #5a7a55;
       background: #f0f7e6;
       border-left: 3px solid #4a9f3f;
-      padding: 8px 12px;
+      padding: 10px 14px;
       border-radius: 4px;
       margin-bottom: 14px;
     }
@@ -127,86 +127,84 @@
     .copy-btn:hover { background: #d8edcc; }
     .copy-btn.copied { background: #4a9f3f; color: white; border-color: #4a9f3f; }
 
-    /* PWA install banner */
-    #pwa-banner {
-      display: none;
+    /* PWA install button */
+    #pwa-section {
       width: 100%;
       max-width: 600px;
-      margin-top: 20px;
-      background: white;
-      border-radius: 14px;
-      box-shadow: 0 2px 12px rgba(74,159,63,0.12);
-      padding: 16px 20px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
+      margin-top: 16px;
     }
 
-    #pwa-banner.hidden { display: none !important; }
+    #pwa-section.hidden { display: none; }
 
-    .pwa-icon {
-      width: 48px;
-      height: 48px;
-      background: #4a9f3f;
-      border-radius: 12px;
+    #pwa-install-btn {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.6rem;
-      flex-shrink: 0;
-    }
-
-    .pwa-text {
-      flex: 1;
-    }
-
-    .pwa-text strong {
-      display: block;
-      font-size: 0.95rem;
-      color: #2d6a27;
-      margin-bottom: 2px;
-    }
-
-    .pwa-text span {
-      font-size: 0.8rem;
-      color: #7a9a76;
-    }
-
-    #pwa-install-btn {
-      padding: 9px 18px;
+      gap: 8px;
+      width: 100%;
+      padding: 14px;
       background: #4a9f3f;
       color: white;
       border: none;
-      border-radius: 8px;
-      font-size: 0.88rem;
+      border-radius: 12px;
+      font-size: 1rem;
       font-weight: 700;
       cursor: pointer;
-      white-space: nowrap;
-      flex-shrink: 0;
+      box-shadow: 0 3px 12px rgba(74,159,63,0.35);
+      transition: background 0.18s, transform 0.1s;
     }
 
-    /* iOS hint */
-    #ios-hint {
+    #pwa-install-btn:active { transform: scale(0.97); }
+
+    /* iOS modal */
+    #ios-modal {
       display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 100;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    #ios-modal.visible { display: flex; }
+
+    .ios-sheet {
+      background: white;
+      border-radius: 20px 20px 0 0;
+      padding: 28px 24px 40px;
       width: 100%;
       max-width: 600px;
-      margin-top: 20px;
-      background: white;
-      border-radius: 14px;
-      box-shadow: 0 2px 12px rgba(74,159,63,0.12);
-      padding: 16px 20px;
       text-align: center;
     }
 
-    #ios-hint.visible { display: block; }
-
-    #ios-hint p {
-      font-size: 0.88rem;
-      color: #4a4a4a;
-      line-height: 1.6;
+    .ios-sheet h3 {
+      font-size: 1.1rem;
+      color: #2d6a27;
+      margin-bottom: 16px;
     }
 
-    #ios-hint .share-icon { font-size: 1.1rem; }
+    .ios-steps {
+      list-style: none;
+      text-align: left;
+      font-size: 1rem;
+      color: #333;
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+
+    .ios-steps li { margin-bottom: 8px; }
+
+    .ios-close {
+      padding: 12px 32px;
+      background: #f0f7e6;
+      border: 1.5px solid #4a9f3f;
+      border-radius: 10px;
+      color: #2d6a27;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
 
     footer {
       margin-top: 28px;
@@ -260,19 +258,24 @@
     <button class="copy-btn" id="copy-btn" onclick="copyText()">複製文字 / Copy / コピー</button>
   </div>
 
-  <!-- PWA install banner (Android / Chrome) -->
-  <div id="pwa-banner" class="hidden">
-    <div class="pwa-icon">🥬</div>
-    <div class="pwa-text">
-      <strong>新增到主畫面</strong>
-      <span>離線使用，方便隨時出示</span>
-    </div>
-    <button id="pwa-install-btn" onclick="installPWA()">新增</button>
+  <!-- PWA install button (always visible unless already installed) -->
+  <div id="pwa-section">
+    <button id="pwa-install-btn" onclick="handleInstall()">
+      📲 新增到主畫面
+    </button>
   </div>
 
-  <!-- iOS hint -->
-  <div id="ios-hint">
-    <p>📲 在 Safari 點選 <span class="share-icon">⬆️</span>「分享」→「加入主畫面」<br>即可離線使用這張小卡</p>
+  <!-- iOS step-by-step modal -->
+  <div id="ios-modal" onclick="closeIOSModal(event)">
+    <div class="ios-sheet">
+      <h3>📲 加入主畫面</h3>
+      <ol class="ios-steps">
+        <li>點選下方工具列的 <strong>分享</strong> 按鈕 ⬆️</li>
+        <li>向下滑動，選擇「<strong>加入主畫面</strong>」</li>
+        <li>右上角點「<strong>新增</strong>」即完成</li>
+      </ol>
+      <button class="ios-close" onclick="document.getElementById('ios-modal').classList.remove('visible')">知道了</button>
+    </div>
   </div>
 
   <footer>lkkicecream.github.io</footer>
@@ -313,30 +316,43 @@
 
     // PWA install
     let deferredPrompt = null;
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+    // Hide button if already installed as standalone
+    if (isStandalone) {
+      document.getElementById('pwa-section').classList.add('hidden');
+    }
 
     window.addEventListener('beforeinstallprompt', e => {
       e.preventDefault();
       deferredPrompt = e;
-      document.getElementById('pwa-banner').classList.remove('hidden');
-      document.getElementById('ios-hint').classList.remove('visible');
     });
 
-    function installPWA() {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then(() => {
-        deferredPrompt = null;
-        document.getElementById('pwa-banner').classList.add('hidden');
-      });
+    function handleInstall() {
+      if (deferredPrompt) {
+        // Android / Chrome
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(result => {
+          deferredPrompt = null;
+          if (result.outcome === 'accepted') {
+            document.getElementById('pwa-section').classList.add('hidden');
+          }
+        });
+      } else if (isIOS && isSafari) {
+        // iOS: show instructions modal
+        document.getElementById('ios-modal').classList.add('visible');
+      } else {
+        // Fallback: already installed or not supported
+        document.getElementById('pwa-section').classList.add('hidden');
+      }
     }
 
-    // iOS Safari detection
-    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-
-    if (isIOS && isSafari && !isStandalone) {
-      document.getElementById('ios-hint').classList.add('visible');
+    function closeIOSModal(e) {
+      if (e.target === document.getElementById('ios-modal')) {
+        document.getElementById('ios-modal').classList.remove('visible');
+      }
     }
 
     // Register service worker
