@@ -7,7 +7,7 @@
   <title>Vibe Coding | Laugh</title>
   <link rel="icon" href="/favicon/favicon.ico">
   <meta name="author" content="Laugh Lin">
-  <meta name="description" content="蒐集所有莫名其妙開發的 Vibe Coding 專案">
+  <meta name="description" content="Vibe Coding 作品集：每一個都是真的拿來用過的。">
 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/css?family=Crimson+Text|Open+Sans:300,800" rel="stylesheet">
@@ -36,81 +36,150 @@
 
     <header class="vibe-header">
       <h1>Vibe Coding 作品集</h1>
-      <p class="vibe-lead">一些不知道為什麼就做出來了的東西。<span id="vibe-count"></span></p>
+      <p class="vibe-lead">Vibe coding 的人很多，這裡收的每一個都是真的拿來用過的。<br>有些任務完成就下架了，留下截圖和使用紀錄。</p>
+      <p class="vibe-stats" id="vibe-stats"></p>
     </header>
 
-    <div class="vibe-filters" id="vibe-filters" role="toolbar" aria-label="依標籤篩選"></div>
+    <div class="vibe-filters" id="vibe-filters"></div>
 
     <div class="row" id="vibe-grid"></div>
-    <p class="vibe-empty" id="vibe-empty" hidden>這個標籤底下還沒有作品。</p>
+    <p class="vibe-empty" id="vibe-empty" hidden>這個條件底下還沒有作品。</p>
   </div>
+
+  <dialog class="vibe-dialog" id="vibe-dialog" aria-labelledby="vibe-d-title">
+    <button type="button" class="vibe-close" id="vibe-close" aria-label="關閉">×</button>
+    <div id="vibe-detail"></div>
+  </dialog>
 
   <script src="/vibe/projects.js"></script>
   <script>
   (function () {
     var projects = window.VIBE_PROJECTS || [];
-    var grid = document.getElementById('vibe-grid');
-    var filters = document.getElementById('vibe-filters');
-    var empty = document.getElementById('vibe-empty');
-    document.getElementById('vibe-count').textContent = '目前共 ' + projects.length + ' 個。';
+    var $ = function (id) { return document.getElementById(id); };
+    var grid = $('vibe-grid'), filters = $('vibe-filters'), empty = $('vibe-empty');
+    var dialog = $('vibe-dialog'), detail = $('vibe-detail');
+    var state = { type: '', category: '' };
 
     function esc(s) {
       return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
         return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
       });
     }
+    function para(s) { return esc(s).replace(/\n/g, '<br>'); }
+    function img(p, i) { return '/vibe/img/' + encodeURIComponent(p.id) + '/' + i.src; }
+    function uniq(key) {
+      var out = [];
+      projects.forEach(function (p) { if (p[key] && out.indexOf(p[key]) === -1) out.push(p[key]); });
+      return out;
+    }
+    function chips(list, cls) {
+      return (list || []).map(function (t) { return '<span class="' + cls + '">' + esc(t) + '</span>'; }).join('');
+    }
 
-    function card(p) {
-      var cover = p.cover
-        ? '<img class="vibe-cover-img" src="' + esc(p.cover) + '" alt="" loading="lazy">'
-        : '<span class="vibe-emoji" aria-hidden="true">' + esc(p.emoji || '💡') + '</span>';
-      var href = p.demo || p.repo || '';
-      var links = '';
-      if (p.demo) links += '<a href="' + esc(p.demo) + '" target="_blank" rel="noopener">Demo ↗</a>';
-      if (p.repo) links += '<a href="' + esc(p.repo) + '" target="_blank" rel="noopener">GitHub ↗</a>';
-      var tags = (p.tags || []).map(function (t) { return '<span class="vibe-tag">' + esc(t) + '</span>'; }).join('');
+    // 統計
+    if (projects.length) {
+      var types = uniq('type');
+      $('vibe-stats').textContent = '目前 ' + projects.length + ' 個作品' +
+        (types.length ? '：' + types.map(function (t) {
+          return t + ' ' + projects.filter(function (p) { return p.type === t; }).length;
+        }).join('、') : '');
+    }
+
+    // 篩選列
+    function filterRow(label, key, values) {
+      if (values.length < 2) return '';
+      return '<div class="vibe-filter-row" role="group" aria-label="' + label + '"><span class="vibe-filter-label">' + label + '</span>' +
+        ['<button type="button" data-key="' + key + '" data-val="">全部</button>']
+          .concat(values.map(function (v) { return '<button type="button" data-key="' + key + '" data-val="' + esc(v) + '">' + esc(v) + '</button>'; }))
+          .join('') + '</div>';
+    }
+    filters.innerHTML = filterRow('類型', 'type', uniq('type')) + filterRow('分類', 'category', uniq('category'));
+    filters.addEventListener('click', function (e) {
+      var b = e.target.closest('button');
+      if (!b) return;
+      state[b.getAttribute('data-key')] = b.getAttribute('data-val');
+      render();
+    });
+
+    function card(p, idx) {
+      var cover = p.images && p.images.length
+        ? '<img src="' + esc(img(p, p.images[0])) + '" alt="' + esc(p.title) + ' 截圖" loading="lazy">'
+        : '<span class="vibe-noimg">' + esc(p.title) + '</span>';
       return '' +
-        '<div class="col-lg-4 col-md-6 col-12 mb-4 vibe-item">' +
-          '<article class="vibe-card">' +
-            (href ? '<a class="vibe-cover" href="' + esc(href) + '" target="_blank" rel="noopener" tabindex="-1">' : '<div class="vibe-cover">') +
-              cover +
-            (href ? '</a>' : '</div>') +
-            '<div class="vibe-body">' +
-              '<div class="vibe-meta">' + esc(p.date || '') + (p.status ? ' · ' + esc(p.status) : '') + '</div>' +
-              '<h2 class="vibe-title">' + esc(p.title) + '</h2>' +
-              '<p class="vibe-desc">' + esc(p.desc || '') + '</p>' +
-              (tags ? '<div class="vibe-tags">' + tags + '</div>' : '') +
-              (links ? '<div class="vibe-links">' + links + '</div>' : '') +
+        '<div class="col-lg-4 col-md-6 col-12 mb-4">' +
+          '<button type="button" class="vibe-card" data-idx="' + idx + '">' +
+            '<div class="vibe-cover">' + cover +
+              (p.type ? '<span class="vibe-type">' + esc(p.type) + '</span>' : '') +
             '</div>' +
-          '</article>' +
+            '<div class="vibe-body">' +
+              '<div class="vibe-meta">' + [p.category, p.period, p.status].filter(Boolean).map(esc).join(' · ') + '</div>' +
+              '<h2 class="vibe-title">' + esc(p.title) + '</h2>' +
+              '<p class="vibe-desc">' + esc(p.summary || '') + '</p>' +
+              '<div class="vibe-stack">' + chips(p.stack, 'vibe-chip') + '</div>' +
+            '</div>' +
+          '</button>' +
         '</div>';
     }
 
-    function render(tag) {
-      var list = tag ? projects.filter(function (p) { return (p.tags || []).indexOf(tag) !== -1; }) : projects;
-      grid.innerHTML = list.map(card).join('');
-      empty.hidden = list.length > 0;
-      Array.prototype.forEach.call(filters.children, function (b) {
-        var on = (b.getAttribute('data-tag') || '') === (tag || '');
+    function render() {
+      var list = [];
+      projects.forEach(function (p, i) {
+        if ((!state.type || p.type === state.type) && (!state.category || p.category === state.category)) list.push(card(p, i));
+      });
+      grid.innerHTML = list.join('');
+      empty.hidden = list.length > 0 || projects.length === 0;
+      Array.prototype.forEach.call(filters.querySelectorAll('button'), function (b) {
+        var on = state[b.getAttribute('data-key')] === b.getAttribute('data-val');
         b.classList.toggle('is-active', on);
         b.setAttribute('aria-pressed', on ? 'true' : 'false');
       });
     }
 
-    var allTags = [];
-    projects.forEach(function (p) {
-      (p.tags || []).forEach(function (t) { if (allTags.indexOf(t) === -1) allTags.push(t); });
+    function section(title, body) {
+      return body ? '<section class="vibe-d-sec"><h3>' + title + '</h3>' + body + '</section>' : '';
+    }
+
+    function open(p) {
+      var gallery = (p.images || []).map(function (i) {
+        return '<figure><a href="' + esc(img(p, i)) + '" target="_blank" rel="noopener"><img src="' + esc(img(p, i)) + '" alt="' + esc(i.caption || p.title) + '" loading="lazy"></a>' +
+          (i.caption ? '<figcaption>' + esc(i.caption) + '</figcaption>' : '') + '</figure>';
+      }).join('');
+      var links = (p.links || []).map(function (l) {
+        return '<a href="' + esc(l.url) + '" target="_blank" rel="noopener">' + esc(l.label) + ' ↗</a>';
+      }).join('');
+      detail.innerHTML =
+        '<div class="vibe-meta">' + [p.type, p.category, p.period, p.status].filter(Boolean).map(esc).join(' · ') + '</div>' +
+        '<h2 class="vibe-d-title" id="vibe-d-title">' + esc(p.title) + '</h2>' +
+        '<p class="vibe-d-summary">' + esc(p.summary || '') + '</p>' +
+        (gallery ? '<div class="vibe-gallery">' + gallery + '</div>' : '') +
+        section('為什麼做它', p.problem ? '<p>' + para(p.problem) + '</p>' : '') +
+        section('實際使用', p.usage ? '<p>' + para(p.usage) + '</p>' : '') +
+        section('語言與技術', p.stack && p.stack.length ? '<div class="vibe-stack">' + chips(p.stack, 'vibe-chip') + '</div>' : '') +
+        (links ? '<div class="vibe-links">' + links + '</div>' : '');
+      if (dialog.showModal) dialog.showModal(); else dialog.setAttribute('open', '');
+      dialog.scrollTop = 0;
+      if (history.replaceState) history.replaceState(null, '', '#' + p.id);
+    }
+    function close() {
+      if (dialog.close) dialog.close(); else dialog.removeAttribute('open');
+    }
+
+    grid.addEventListener('click', function (e) {
+      var c = e.target.closest('.vibe-card');
+      if (c) open(projects[+c.getAttribute('data-idx')]);
     });
-    filters.innerHTML = ['<button type="button" data-tag="">全部</button>']
-      .concat(allTags.map(function (t) { return '<button type="button" data-tag="' + esc(t) + '">' + esc(t) + '</button>'; }))
-      .join('');
-    filters.hidden = allTags.length === 0;
-    filters.addEventListener('click', function (e) {
-      var b = e.target.closest('button');
-      if (b) render(b.getAttribute('data-tag'));
+    $('vibe-close').addEventListener('click', close);
+    dialog.addEventListener('click', function (e) { if (e.target === dialog) close(); });
+    dialog.addEventListener('close', function () {
+      if (history.replaceState) history.replaceState(null, '', location.pathname);
     });
 
-    render('');
+    render();
+    if (!projects.length) { empty.hidden = false; empty.textContent = '作品整理中，敬請期待。'; }
+
+    // 支援 /vibe/#id 直接分享某個作品
+    var hash = decodeURIComponent(location.hash.slice(1));
+    if (hash) projects.forEach(function (p) { if (p.id === hash) open(p); });
   })();
   </script>
 
