@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Vibe Coding | Laugh</title>
+  <link rel="icon" href="/favicon/favicon.ico">
+  <meta name="author" content="Laugh Lin">
+  <meta name="description" content="蒐集所有莫名其妙開發的 Vibe Coding 專案">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css?family=Crimson+Text|Open+Sans:300,800" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/vibe/vibe.css">
+</head>
+
+<body>
+  <div class="container-fluid navbar-container m-sm-5">
+    <nav class="navbar navbar-toggleable-sm navbar-light px-1 py-3 my-3 mb-sm-5">
+      <a class="navbar-brand ml-2" href="/">Laugh</a>
+      <button class="navbar-toggler navbar-toggler-right py-2" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse text-center" id="navbarCollapse">
+        <ul class="navbar-nav ml-auto my-auto">
+          <li class="nav-item active"><a class="nav-link" href="/vibe/">Vibe Coding</a></li>
+          <li class="nav-item"><a class="nav-link" href="/2022/08/09/about">About</a></li>
+          <li class="nav-item"><a class="nav-link" target="_blank" rel="noopener" href="https://www.instagram.com/laughlaugh_sincere51/">Instagram</a></li>
+          <li class="nav-item"><a class="nav-link" target="_blank" rel="noopener" href="https://www.linkedin.com/in/tinganlin-laughlaugh">LinkedIn</a></li>
+          <li class="nav-item"><a class="nav-link" target="_blank" rel="noopener" href="https://www.facebook.com/lkkicecream/">Facebook</a></li>
+        </ul>
+        <hr class="hidden-md-up" />
+      </div>
+    </nav>
+
+    <header class="vibe-header">
+      <h1>Vibe Coding 作品集</h1>
+      <p class="vibe-lead">一些不知道為什麼就做出來了的東西。<span id="vibe-count"></span></p>
+    </header>
+
+    <div class="vibe-filters" id="vibe-filters" role="toolbar" aria-label="依標籤篩選"></div>
+
+    <div class="row" id="vibe-grid"></div>
+    <p class="vibe-empty" id="vibe-empty" hidden>這個標籤底下還沒有作品。</p>
+  </div>
+
+  <script src="/vibe/projects.js"></script>
+  <script>
+  (function () {
+    var projects = window.VIBE_PROJECTS || [];
+    var grid = document.getElementById('vibe-grid');
+    var filters = document.getElementById('vibe-filters');
+    var empty = document.getElementById('vibe-empty');
+    document.getElementById('vibe-count').textContent = '目前共 ' + projects.length + ' 個。';
+
+    function esc(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+
+    function card(p) {
+      var cover = p.cover
+        ? '<img class="vibe-cover-img" src="' + esc(p.cover) + '" alt="" loading="lazy">'
+        : '<span class="vibe-emoji" aria-hidden="true">' + esc(p.emoji || '💡') + '</span>';
+      var href = p.demo || p.repo || '';
+      var links = '';
+      if (p.demo) links += '<a href="' + esc(p.demo) + '" target="_blank" rel="noopener">Demo ↗</a>';
+      if (p.repo) links += '<a href="' + esc(p.repo) + '" target="_blank" rel="noopener">GitHub ↗</a>';
+      var tags = (p.tags || []).map(function (t) { return '<span class="vibe-tag">' + esc(t) + '</span>'; }).join('');
+      return '' +
+        '<div class="col-lg-4 col-md-6 col-12 mb-4 vibe-item">' +
+          '<article class="vibe-card">' +
+            (href ? '<a class="vibe-cover" href="' + esc(href) + '" target="_blank" rel="noopener" tabindex="-1">' : '<div class="vibe-cover">') +
+              cover +
+            (href ? '</a>' : '</div>') +
+            '<div class="vibe-body">' +
+              '<div class="vibe-meta">' + esc(p.date || '') + (p.status ? ' · ' + esc(p.status) : '') + '</div>' +
+              '<h2 class="vibe-title">' + esc(p.title) + '</h2>' +
+              '<p class="vibe-desc">' + esc(p.desc || '') + '</p>' +
+              (tags ? '<div class="vibe-tags">' + tags + '</div>' : '') +
+              (links ? '<div class="vibe-links">' + links + '</div>' : '') +
+            '</div>' +
+          '</article>' +
+        '</div>';
+    }
+
+    function render(tag) {
+      var list = tag ? projects.filter(function (p) { return (p.tags || []).indexOf(tag) !== -1; }) : projects;
+      grid.innerHTML = list.map(card).join('');
+      empty.hidden = list.length > 0;
+      Array.prototype.forEach.call(filters.children, function (b) {
+        var on = (b.getAttribute('data-tag') || '') === (tag || '');
+        b.classList.toggle('is-active', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+    }
+
+    var allTags = [];
+    projects.forEach(function (p) {
+      (p.tags || []).forEach(function (t) { if (allTags.indexOf(t) === -1) allTags.push(t); });
+    });
+    filters.innerHTML = ['<button type="button" data-tag="">全部</button>']
+      .concat(allTags.map(function (t) { return '<button type="button" data-tag="' + esc(t) + '">' + esc(t) + '</button>'; }))
+      .join('');
+    filters.hidden = allTags.length === 0;
+    filters.addEventListener('click', function (e) {
+      var b = e.target.closest('button');
+      if (b) render(b.getAttribute('data-tag'));
+    });
+
+    render('');
+  })();
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+</body>
+</html>
