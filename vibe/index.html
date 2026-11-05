@@ -154,6 +154,7 @@
         (gallery ? '<div class="vibe-gallery">' + gallery + '</div>' : '') +
         section('為什麼做它', p.problem ? '<p>' + para(p.problem) + '</p>' : '') +
         section('實際使用', p.usage ? '<p>' + para(p.usage) + '</p>' : '') +
+        section('怎麼做的', p.how ? '<p>' + para(p.how) + '</p>' : '') +
         section('語言與技術', p.stack && p.stack.length ? '<div class="vibe-stack">' + chips(p.stack, 'vibe-chip') + '</div>' : '') +
         (links ? '<div class="vibe-links">' + links + '</div>' : '');
       if (dialog.showModal) dialog.showModal(); else dialog.setAttribute('open', '');
