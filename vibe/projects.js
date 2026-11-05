@@ -38,6 +38,21 @@
  */
 window.VIBE_PROJECTS = [
   {
+    id: "dieteveryday",
+    title: "冰冰蹦 DietEveryDay",
+    type: "App",
+    category: "健康",
+    period: "2026-10 ~ 現在",
+    status: "使用中",
+    summary: "冰箱食材 × 熱量赤字的 iPhone App：拍照記餐、管冰箱到期日，用快過期的食材找網路上的真實食譜。",
+    problem: "營養師給了每日熱量和飲食規則，但每餐手動記錄太麻煩；冰箱裡的食材也常常放到過期。市面上的 App 不是記錄太費工，就是讓 AI 自己編食譜，煮出來不一定好吃。",
+    usage: "",
+    how: "先寫規格文件、做可點的畫面原型，把需求、流程和分析邏輯都定下來，再開始實作。\n幾個自己定的原則：\n・AI 不發明食譜：只從 YouTube、愛料理等真實來源找，依觀看數和評價篩選，AI 只負責解析和換算份量。\n・不誣賴使用者：運動消耗以 Apple Watch 實測為準，缺資料就標「估算」或「待同步」，不直接判定超標。\n・輸入要省力：拍這餐、掃條碼、拍營養標示、拍發票入庫，能自動扣庫存的就不要手動輸入。\n・目標由營養師決定，App 只負責計算與呈現。\n另外有桌面和鎖定畫面的 Widget、從 YouTube／Safari 分享收藏食譜、解凍提醒、採購清單，以及匯出 PDF 給營養師。整個 App 約 1.2 萬行 Swift。",
+    stack: ["Swift", "SwiftUI", "SwiftData", "HealthKit", "Swift Charts", "WidgetKit", "App Intents", "VisionKit", "OpenAI API", "YouTube Data API", "XcodeGen", "XCTest"],
+    images: [],
+    links: []
+  },
+  {
     id: "bbq-game-night",
     title: "BBQ Game Night",
     type: "網站",
