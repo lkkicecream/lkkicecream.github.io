@@ -37,6 +37,20 @@
  */
 window.VIBE_PROJECTS = [
   {
+    id: "bbq-game-night",
+    title: "BBQ Game Night",
+    type: "",
+    category: "聚會",
+    period: "",
+    status: "任務完成",
+    summary: "去男朋友家烤肉前，為一群很幼稚的男生寫的團康遊戲：嗆人、比賽、賺錢、搞人、亂講話全包。",
+    problem: "約了男朋友的朋友們去他家烤肉。這群男生最愛互嗆、比賽、賺錢、搞人跟亂講話，一般的團康遊戲對他們來說太乖了。",
+    usage: "",
+    stack: [],
+    images: [],
+    links: []
+  },
+  {
     id: "dingdong",
     title: "DING DONG 叮咚",
     type: "App",
