@@ -41,7 +41,7 @@ window.VIBE_PROJECTS = [
     title: "BBQ Game Night",
     type: "網站",
     category: "聚會",
-    period: "",
+    period: "2026-10-24",
     status: "任務完成",
     summary: "去男朋友家烤肉前，為一群很幼稚的男生寫的團康遊戲：嗆人、比賽、賺錢、搞人、亂講話全包。",
     problem: "約了男朋友的朋友們去他家烤肉。這群男生最愛互嗆、比賽、賺錢、搞人跟亂講話，一般的團康遊戲對他們來說太乖了。",
