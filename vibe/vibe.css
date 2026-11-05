@@ -72,9 +72,9 @@
   display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; margin: 1.25rem 0 .5rem;
   scroll-snap-type: x mandatory;
 }
-.vibe-gallery figure { flex: 0 0 auto; margin: 0; scroll-snap-align: start; max-width: 85%; width: min-content; }
-.vibe-gallery img { height: 340px; max-width: 100%; object-fit: contain; border: 1px solid #eee; background: #f7f7f5; display: block; }
-.vibe-gallery figcaption { font-size: .75rem; color: #888; margin-top: .35rem; }
+.vibe-gallery figure { flex: 0 0 auto; margin: 0; scroll-snap-align: start; display: table; }
+.vibe-gallery img { height: 340px; width: auto; max-width: 75vw; object-fit: contain; border: 1px solid #eee; background: #f7f7f5; display: block; }
+.vibe-gallery figcaption { display: table-caption; caption-side: bottom; font-size: .75rem; color: #888; margin-top: .35rem; line-height: 1.6; }
 
 .vibe-d-sec { margin-top: 1.5rem; }
 .vibe-d-sec h3 { font-size: 1.15rem; margin-bottom: .5rem; border-bottom: 1px solid #eee; padding-bottom: .35rem; }
@@ -89,7 +89,7 @@
 
 @media (max-width: 575px) {
   .vibe-dialog { padding: 1.25rem 1rem 1.5rem; }
-  .vibe-gallery img { height: 260px; }
+  .vibe-gallery img { height: 300px; }
 }
 
 /* 開啟時焦點會落在關閉鈕，用細框代替瀏覽器預設的粗外框 */
