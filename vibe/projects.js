@@ -38,15 +38,15 @@
 window.VIBE_PROJECTS = [
   {
     id: "dingdong",
-    title: "DING DONG",
-    type: "",
+    title: "DING DONG 叮咚",
+    type: "App",
     category: "生活",
-    period: "",
-    status: "",
+    period: "2026-10 ~ 現在",
+    status: "使用中",
     summary: "男朋友上班不開 LINE，所以我把閒置手機變成他桌上的專屬通知螢幕。",
     problem: "男朋友工作時不開 LINE，有事找他常常要等很久才看到，急事也一樣。",
-    usage: "把一支閒置手機放在他手邊當接收螢幕，我從發送端傳訊息，內容會馬上出現在那支手機上。\n他不用打字，可以直接按快速回應。標成緊急的訊息只要還沒回應，就會一直通知到他回為止。",
-    stack: [],
+    usage: "從 2026 年 10 月中開始每天用，到現在還在用。\n一支閒置的 iPhone 放在男朋友桌上當接收螢幕，我從自己手機的發送端傳訊息，內容馬上出現在他手邊。他不用打字，按快速回應就能回我；標成緊急的訊息只要沒回應，就會一直通知到回為止。\n現在大部分訊息他都會馬上看到，下班前也能直接提醒他來載我。非常開心，好用一百分。",
+    stack: ["Swift", "SwiftUI", "iOS", "ntfy.sh", "Xcode", "launchd"],
     images: [],
     links: []
   },
