@@ -46,10 +46,23 @@
       <p class="vibe-stats" id="vibe-stats"></p>
     </header>
 
-    <div class="vibe-filters" id="vibe-filters"></div>
+    <div class="vibe-modes" role="group" aria-label="瀏覽方式">
+      <button type="button" data-mode="phone">📱 手機模式</button>
+      <button type="button" data-mode="list">☰ 列表模式</button>
+    </div>
 
-    <div class="row" id="vibe-grid"></div>
-    <p class="vibe-empty" id="vibe-empty" hidden>這個條件底下還沒有作品。</p>
+    <!-- 手機模式：主畫面上是每個作品的 App，打開看功能，旁邊同步介紹 -->
+    <section class="vibe-phone-mode" id="vibe-phone-mode" hidden>
+      <div class="vibe-device"><div class="vibe-screen" id="vibe-screen"></div></div>
+      <div class="vibe-panel" id="vibe-panel" aria-live="polite"></div>
+    </section>
+
+    <!-- 列表模式：卡片＋篩選 -->
+    <section id="vibe-list-mode" hidden>
+      <div class="vibe-filters" id="vibe-filters"></div>
+      <div class="row" id="vibe-grid"></div>
+      <p class="vibe-empty" id="vibe-empty" hidden>這個條件底下還沒有作品。</p>
+    </section>
   </div>
 
   <dialog class="vibe-dialog" id="vibe-dialog" aria-labelledby="vibe-d-title">
@@ -107,14 +120,33 @@
       render();
     });
 
+    function phone(p, src, cls) {
+      return '<img class="vibe-phone ' + cls + '" src="' + esc(img(p, { src: src })) + '" alt="" loading="lazy">';
+    }
+
+    // 卡片封面：手機截圖排成「手機展示」，現場照片滿版、角落疊一支手機
+    function coverHTML(p) {
+      var c = p.cover || {};
+      var shots = (p.images || []).map(function (i) { return i.src; });
+      if (c.style === 'photo' && c.image) {
+        return '<div class="vibe-cover vibe-cover--photo">' +
+          '<img class="vibe-photo" src="' + esc(img(p, { src: c.image })) + '" alt="' + esc(p.title) + '" loading="lazy"' +
+            (c.position ? ' style="object-position:' + esc(c.position) + '"' : '') + '>' +
+          (c.phone ? phone(p, c.phone, 'vibe-phone--corner') : '') + '</div>';
+      }
+      var list = (c.images || shots).slice(0, 3);
+      if (!list.length) return '<div class="vibe-cover"><span class="vibe-noimg">' + esc(p.title) + '</span></div>';
+      var colors = c.colors || ['#f6f6f4', '#d9d9d6'];
+      var cls = list.length === 3 ? ['is-left', 'is-center', 'is-right'] : list.length === 2 ? ['is-left2', 'is-right2'] : ['is-center'];
+      return '<div class="vibe-cover vibe-cover--phones" style="--c1:' + esc(colors[0]) + ';--c2:' + esc(colors[1]) + '">' +
+        list.map(function (src, i) { return phone(p, src, cls[i]); }).join('') + '</div>';
+    }
+
     function card(p, idx) {
-      var cover = p.images && p.images.length
-        ? '<img src="' + esc(img(p, p.images[0])) + '" alt="' + esc(p.title) + ' 截圖" loading="lazy"' + (p.coverPosition ? ' style="object-position:' + esc(p.coverPosition) + '"' : '') + '>'
-        : '<span class="vibe-noimg">' + esc(p.title) + '</span>';
       return '' +
         '<div class="col-lg-4 col-md-6 col-12 mb-4">' +
           '<button type="button" class="vibe-card" data-idx="' + idx + '">' +
-            '<div class="vibe-cover">' + cover +
+            '<div class="vibe-cover-wrap">' + coverHTML(p) +
               (p.type ? '<span class="vibe-type">' + esc(p.type) + '</span>' : '') +
             '</div>' +
             '<div class="vibe-body">' +
@@ -183,6 +215,129 @@
 
     render();
     if (!projects.length) { empty.hidden = false; empty.textContent = '作品整理中，敬請期待。'; }
+
+    // ---------- 手機模式 ----------
+    var screen = $('vibe-screen'), panel = $('vibe-panel');
+    var phoneState = { app: null, feat: null };
+
+    function clock() {
+      var d = new Date();
+      return d.getHours() + ':' + ('0' + d.getMinutes()).slice(-2);
+    }
+    function iconStyle(p) {
+      var c = (p.cover && p.cover.colors) || ['#f6f6f4', '#cfcfcc'];
+      return '--c1:' + esc(c[0]) + ';--c2:' + esc(c[1]);
+    }
+    function statusBar(dark) {
+      return '<div class="vibe-status' + (dark ? ' is-dark' : '') + '"><span>' + clock() + '</span><span class="vibe-island"></span><span>●●● 5G ▮</span></div>';
+    }
+
+    function renderScreen(anim) {
+      var html;
+      if (phoneState.app === null) {
+        html = '<div class="vibe-view vibe-home">' + statusBar(false) +
+          '<div class="vibe-widget"><b>Vibe Coding</b><span>' + projects.length + ' 個作品，每個都真的用過</span></div>' +
+          '<div class="vibe-icons">' + projects.map(function (p, i) {
+            return '<button type="button" class="vibe-icon" data-app="' + i + '">' +
+              '<span class="vibe-icon-img" style="' + iconStyle(p) + '" aria-hidden="true">' + esc(p.icon || '✨') + '</span>' +
+              '<span class="vibe-icon-name">' + esc(p.short || p.title) + '</span></button>';
+          }).join('') + '</div>' +
+          '<p class="vibe-home-hint">點一個 App 打開看看</p></div>';
+      } else {
+        var p = projects[phoneState.app];
+        if (phoneState.feat === null) {
+          html = '<div class="vibe-view vibe-app">' + statusBar(true) +
+            '<div class="vibe-appbar"><button type="button" class="vibe-back" data-back="home">‹ 主畫面</button><b>' + esc(p.short || p.title) + '</b><span></span></div>' +
+            '<div class="vibe-appbody"><div class="vibe-apphero" style="' + iconStyle(p) + '"><span>' + esc(p.icon || '✨') + '</span><div><b>' + esc(p.title) + '</b><small>' + esc(p.type || '') + ' · ' + esc(p.status || '') + '</small></div></div>' +
+            '<div class="vibe-tiles">' + (p.images || []).map(function (im, k) {
+              return '<button type="button" class="vibe-tile" data-feat="' + k + '"><img src="' + esc(img(p, im)) + '" alt="" loading="lazy"><span>' + esc(im.label || ('畫面 ' + (k + 1))) + '</span></button>';
+            }).join('') + '</div></div></div>';
+        } else {
+          var im = p.images[phoneState.feat];
+          html = '<div class="vibe-view vibe-feature">' + statusBar(true) +
+            '<div class="vibe-appbar"><button type="button" class="vibe-back" data-back="app">‹ ' + esc(p.short || p.title) + '</button><b>' + esc(im.label || '') + '</b><span></span></div>' +
+            '<div class="vibe-featbody"><img src="' + esc(img(p, im)) + '" alt="' + esc(im.caption || im.label || '') + '"></div></div>';
+        }
+      }
+      screen.innerHTML = html;
+      if (anim) screen.firstChild.classList.add('is-' + anim);
+    }
+
+    function renderPanel() {
+      var html;
+      if (phoneState.app === null) {
+        html = '<p class="vibe-panel-kicker">手機模式</p><h2 class="vibe-panel-title">點一個 App 打開看看</h2>' +
+          '<p>每個 App 都是一個真的拿來用過的作品。打開它，可以看到各個功能的畫面和介紹。想依類型篩選、看技術標籤，可以切換到「列表模式」。</p>' +
+          '<div class="vibe-panel-apps">' + projects.map(function (p, i) {
+            return '<button type="button" data-app="' + i + '"><span style="' + iconStyle(p) + '">' + esc(p.icon || '✨') + '</span>' + esc(p.title) + '</button>';
+          }).join('') + '</div>';
+      } else {
+        var p = projects[phoneState.app];
+        var meta = '<p class="vibe-panel-kicker">' + [p.type, p.category, p.period, p.status].filter(Boolean).map(esc).join(' · ') + '</p>';
+        if (phoneState.feat === null) {
+          var firstUsage = (p.usage || '').split('\n')[0];
+          html = meta + '<h2 class="vibe-panel-title">' + esc(p.title) + '</h2>' +
+            '<p class="vibe-panel-lead">' + esc(p.summary || '') + '</p>' +
+            (p.problem ? '<h3>為什麼做它</h3><p>' + para(p.problem) + '</p>' : '') +
+            (firstUsage ? '<h3>實際使用</h3><p>' + esc(firstUsage) + '</p>' : '') +
+            '<div class="vibe-stack">' + chips(p.stack, 'vibe-chip') + '</div>' +
+            '<p class="vibe-panel-hint">點手機裡的功能，看每個畫面在做什麼。</p>' +
+            '<button type="button" class="vibe-panel-more" data-more="' + phoneState.app + '">看完整介紹 →</button>';
+        } else {
+          var n = p.images.length, k = phoneState.feat, im = p.images[k];
+          html = meta + '<h2 class="vibe-panel-title">' + esc(im.label || '') + '</h2>' +
+            '<p class="vibe-panel-lead">' + esc(im.caption || '') + '</p>' +
+            '<div class="vibe-panel-nav">' +
+              '<button type="button" data-step="-1"' + (k === 0 ? ' disabled' : '') + '>‹ 上一個</button>' +
+              '<span>' + (k + 1) + ' / ' + n + '</span>' +
+              '<button type="button" data-step="1"' + (k === n - 1 ? ' disabled' : '') + '>下一個 ›</button>' +
+            '</div>' +
+            '<button type="button" class="vibe-panel-more" data-more="' + phoneState.app + '">看 ' + esc(p.short || p.title) + ' 的完整介紹 →</button>';
+        }
+      }
+      panel.innerHTML = html;
+    }
+
+    function go(app, feat, anim) {
+      phoneState.app = app; phoneState.feat = feat;
+      renderScreen(anim); renderPanel();
+    }
+
+    function onPhoneClick(e) {
+      var t = e.target.closest('button');
+      if (!t) return;
+      if (t.hasAttribute('data-app')) go(+t.getAttribute('data-app'), null, 'open');
+      else if (t.hasAttribute('data-feat')) go(phoneState.app, +t.getAttribute('data-feat'), 'push');
+      else if (t.getAttribute('data-back') === 'home') go(null, null, 'close');
+      else if (t.getAttribute('data-back') === 'app') go(phoneState.app, null, 'pop');
+      else if (t.hasAttribute('data-step')) {
+        var k = phoneState.feat + (+t.getAttribute('data-step'));
+        var n = projects[phoneState.app].images.length;
+        if (k >= 0 && k < n) go(phoneState.app, k, +t.getAttribute('data-step') > 0 ? 'push' : 'pop');
+      } else if (t.hasAttribute('data-more')) open(projects[+t.getAttribute('data-more')]);
+    }
+    screen.addEventListener('click', onPhoneClick);
+    panel.addEventListener('click', onPhoneClick);
+
+    // ---------- 模式切換（預設手機模式，記住上次的選擇） ----------
+    var modeButtons = document.querySelectorAll('.vibe-modes button');
+    function setMode(mode) {
+      $('vibe-phone-mode').hidden = mode !== 'phone';
+      $('vibe-list-mode').hidden = mode !== 'list';
+      Array.prototype.forEach.call(modeButtons, function (b) {
+        var on = b.getAttribute('data-mode') === mode;
+        b.classList.toggle('is-active', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+      try { localStorage.setItem('vibe-mode', mode); } catch (e) {}
+    }
+    Array.prototype.forEach.call(modeButtons, function (b) {
+      b.addEventListener('click', function () { setMode(b.getAttribute('data-mode')); });
+    });
+    var savedMode = null;
+    try { savedMode = localStorage.getItem('vibe-mode'); } catch (e) {}
+    go(null, null);
+    setMode(savedMode === 'list' ? 'list' : 'phone');
 
     // 支援 /vibe/#id 直接分享某個作品
     var hash = decodeURIComponent(location.hash.slice(1));
