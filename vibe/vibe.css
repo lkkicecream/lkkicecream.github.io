@@ -1,25 +1,28 @@
 /* Vibe Coding 作品集 — 沿用主站的極簡黑白風格 */
 
+/* 主站只載入 Open Sans 的 300 與 800 字重，中文又會掉到系統細體，這頁的內文改用思源黑體 */
+body { font-family: 'Noto Sans TC', 'Open Sans', sans-serif; font-weight: 400; color: #222; }
+
 /* 主站 styles.css 有全域的 `span { font-size:1.3rem; margin:0 10px; font-family:Crimson }`，這頁的 span 先重設 */
 .vibe-page span, .vibe-header span, .vibe-filters span, #vibe-grid span, .vibe-dialog span {
-  font-family: 'Open Sans', sans-serif; font-size: inherit; margin: 0; color: inherit;
+  font-family: 'Noto Sans TC', 'Open Sans', sans-serif; font-size: inherit; margin: 0; color: inherit;
 }
 
 .vibe-header { margin: 0 0 1.75rem; padding: 0 .25rem; }
-.vibe-eyebrow { font-size: .75rem; letter-spacing: 3px; color: #999; text-transform: uppercase; margin: 0 0 .5rem; }
-.vibe-header h1 { font-size: 2.2rem; margin-bottom: 1rem; line-height: 1.35; }
+.vibe-eyebrow { font-size: .85rem; letter-spacing: 3px; color: #777; text-transform: uppercase; margin: 0 0 .5rem; }
+.vibe-header h1 { font-family: 'Noto Sans TC', sans-serif; font-weight: 700; font-size: 2.3rem; letter-spacing: 1px; margin-bottom: 1rem; line-height: 1.35; }
 .vibe-intro { max-width: 46rem; margin-bottom: .75rem; }
-.vibe-intro p { color: #555; font-weight: 300; line-height: 2; margin: 0 0 .6rem; font-size: .95rem; }
+.vibe-intro p { color: #333; font-weight: 400; line-height: 1.95; margin: 0 0 .7rem; font-size: 1.05rem; }
 @media (max-width: 575px) { .vibe-header h1 { font-size: 1.7rem; } }
-.vibe-stats { color: #999; font-size: .8rem; letter-spacing: 1px; margin: 0; }
+.vibe-stats { color: #666; font-size: .92rem; letter-spacing: 1px; margin: 0; }
 
 .vibe-filters { margin: 0 0 1.75rem; padding: 0 .25rem; }
 .vibe-filter-row { margin-bottom: .4rem; }
 #vibe-filters .vibe-filter-label {
-  display: inline-block; width: 3rem; font-size: .75rem; letter-spacing: 1.5px; color: #999;
+  display: inline-block; width: 3.2rem; font-size: .9rem; letter-spacing: 1.5px; color: #666;
 }
 .vibe-filters button {
-  margin: 0 .4rem .4rem 0; font-size: .8rem; letter-spacing: 1px; cursor: pointer; border-width: 1px;
+  margin: 0 .4rem .4rem 0; font-size: .95rem; letter-spacing: 1px; cursor: pointer; border-width: 1px; color: #333;
 }
 .vibe-filters button.is-active { color: #fff; background: #000; border-color: #000; }
 
@@ -41,17 +44,17 @@
 }
 #vibe-grid .vibe-type {
   position: absolute; top: 10px; left: 10px; background: #000; color: #fff;
-  font-size: .7rem; letter-spacing: 1.5px; padding: 2px 9px;
+  font-size: .82rem; letter-spacing: 1.5px; padding: 3px 10px;
 }
 
 .vibe-body { padding: 1rem 1.25rem 1.25rem; display: flex; flex-direction: column; flex: 1; width: 100%; }
-.vibe-meta { font-size: .72rem; letter-spacing: 1.5px; color: #999; margin-bottom: .35rem; }
-.vibe-title { font-size: 1.45rem; margin-bottom: .4rem; word-break: break-word; }
-.vibe-desc { color: #555; line-height: 1.8; font-size: .92rem; margin-bottom: .75rem; flex: 1; white-space: normal; }
+.vibe-meta { font-size: .85rem; letter-spacing: 1px; color: #666; margin-bottom: .35rem; }
+.vibe-title { font-family: 'Crimson Text', 'Noto Sans TC', serif; font-weight: 700; font-size: 1.55rem; color: #111; margin-bottom: .4rem; word-break: break-word; }
+.vibe-desc { color: #333; line-height: 1.8; font-size: 1.02rem; margin-bottom: .75rem; flex: 1; white-space: normal; }
 
 .vibe-stack { line-height: 1; }
 #vibe-grid .vibe-chip, .vibe-dialog .vibe-chip {
-  display: inline-block; font-size: .7rem; letter-spacing: .5px; color: #555;
+  display: inline-block; font-size: .85rem; letter-spacing: .3px; color: #333;
   background: #f3f3f1; padding: 4px 8px; margin: 0 .35rem .35rem 0;
 }
 
@@ -60,7 +63,7 @@
 /* 詳細內容 */
 .vibe-dialog {
   width: min(860px, calc(100vw - 32px)); max-height: calc(100vh - 48px);
-  border: 1px solid #ddd; padding: 2rem 2rem 2.25rem; overflow-y: auto; color: #333;
+  border: 1px solid #ddd; padding: 2rem 2rem 2.25rem; overflow-y: auto; color: #222;
 }
 .vibe-dialog::backdrop { background: rgba(255, 255, 255, .85); }
 .vibe-close {
@@ -68,8 +71,8 @@
   font-size: 1.8rem; line-height: 1; padding: 0 .25rem; cursor: pointer; color: #777;
 }
 .vibe-close:hover { border: 0; color: #000; }
-.vibe-d-title { font-size: 2rem; margin-bottom: .5rem; }
-.vibe-d-summary { color: #555; line-height: 1.9; }
+.vibe-d-title { font-family: 'Crimson Text', 'Noto Sans TC', serif; font-weight: 700; font-size: 2.1rem; color: #111; margin-bottom: .5rem; }
+.vibe-d-summary { color: #333; line-height: 1.9; font-size: 1.08rem; }
 
 .vibe-gallery {
   display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; margin: 1.25rem 0 .5rem;
@@ -77,15 +80,15 @@
 }
 .vibe-gallery figure { flex: 0 0 auto; margin: 0; scroll-snap-align: start; display: table; }
 .vibe-gallery img { height: 340px; width: auto; max-width: 75vw; object-fit: contain; border: 1px solid #eee; background: #f7f7f5; display: block; }
-.vibe-gallery figcaption { display: table-caption; caption-side: bottom; font-size: .75rem; color: #888; margin-top: .35rem; line-height: 1.6; }
+.vibe-gallery figcaption { display: table-caption; caption-side: bottom; font-size: .9rem; color: #555; margin-top: .35rem; line-height: 1.6; }
 
 .vibe-d-sec { margin-top: 1.5rem; }
-.vibe-d-sec h3 { font-size: 1.15rem; margin-bottom: .5rem; border-bottom: 1px solid #eee; padding-bottom: .35rem; }
-.vibe-d-sec p { color: #555; line-height: 1.9; margin: 0; }
+.vibe-d-sec h3 { font-family: 'Noto Sans TC', sans-serif; font-weight: 700; font-size: 1.2rem; color: #111; margin-bottom: .5rem; border-bottom: 1px solid #eee; padding-bottom: .35rem; }
+.vibe-d-sec p { color: #333; line-height: 1.95; margin: 0; font-size: 1.02rem; }
 
 .vibe-links { margin-top: 1.5rem; }
 .vibe-links a {
-  font-size: .8rem; letter-spacing: 1px; color: #333; text-decoration: none;
+  font-size: .95rem; letter-spacing: 1px; color: #222; text-decoration: none;
   border-bottom: 1px solid #bbb; margin-right: 1rem;
 }
 .vibe-links a:hover { color: #000; border-bottom-color: #555; text-decoration: none; }
