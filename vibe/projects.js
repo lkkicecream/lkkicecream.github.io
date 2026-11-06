@@ -54,7 +54,10 @@ window.VIBE_PROJECTS = [
       { src: "home.jpg", caption: "首頁：今天還能吃多少、全天消耗預估、快過期食材，一鍵「拍這餐」" },
       { src: "fridge.jpg", caption: "冰箱：冷凍、冷藏、常溫、調味料分區，一眼看出每樣還剩幾天" },
       { src: "fridge-list.jpg", caption: "清單模式：「依你常買的」一鍵入庫，依到期日排序" },
-      { src: "recipes.jpg", caption: "依冰箱食材搜尋愛料理食譜，套用營養師給的飲食規則" }
+      { src: "recipes.jpg", caption: "依冰箱食材搜尋愛料理食譜，套用營養師給的飲食規則" },
+      { src: "wheel.jpg", caption: "不知道吃什麼：從冰箱湊得出來的自己的料理裡轉盤抽一道" },
+      { src: "weekly.jpg", caption: "每週回顧：把這週拍的餐點自動去背，拼成一張「這週吃了什麼」" },
+      { src: "stats.jpg", caption: "統計：體重趨勢、熱量收支，並用實際體重回推校正手錶的消耗" }
     ],
     links: []
   },
