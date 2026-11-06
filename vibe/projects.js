@@ -57,7 +57,8 @@ window.VIBE_PROJECTS = [
       { src: "recipes.jpg", caption: "依冰箱食材搜尋愛料理食譜，套用營養師給的飲食規則" },
       { src: "wheel.jpg", caption: "不知道吃什麼：從冰箱湊得出來的自己的料理裡轉盤抽一道" },
       { src: "weekly.jpg", caption: "每週回顧：把這週拍的餐點自動去背，拼成一張「這週吃了什麼」" },
-      { src: "stats.jpg", caption: "統計：體重趨勢、熱量收支，並用實際體重回推校正手錶的消耗" }
+      { src: "nutrition.jpg", caption: "營養素分析：對照營養師的目標，一眼看出蛋白質偏低、脂肪偏高" },
+      { src: "stats.jpg", caption: "90 天統計：體重趨勢與熱量收支，並用實際體重回推校正手錶的消耗" }
     ],
     links: []
   },
